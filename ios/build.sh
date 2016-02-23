@@ -251,10 +251,13 @@ function sync() {
 
 # Functions to twiddle the libWebRTC_objc target so that we can build the files that we need and exclude socket rocket and such
 function twiddle_objc_target () {
-    cd "$WEBRTC"
-    echo "Adding a new libWebRTC_objc target"
-    echo "$PROJECT_DIR/insert_two_lines_after_text.py"
-    python "$PROJECT_DIR/insert_two_lines_after_text.py"  "$WEBRTC/src/webrtc/webrtc_examples.gyp"
+    if [ -e "$WEBRTC/src/webrtc/webrtc_examples.gyp" ]
+    then
+        cd "$WEBRTC"
+        echo "Adding a new libWebRTC_objc target"
+        echo "$PROJECT_DIR/insert_two_lines_after_text.py"
+        python "$PROJECT_DIR/insert_two_lines_after_text.py"  "$WEBRTC/src/webrtc/webrtc_examples.gyp"
+    fi
 }
 
 function untwiddle_objc_target () {
