@@ -148,7 +148,7 @@ function get_revision_number() {
     DIR=`pwd`
     cd "$WEBRTC/src"
 
-    REVISION_NUMBER=`git log -1 | egrep 'commit [^\s]{40}' | tr -d 'commit '
+    REVISION_NUMBER=`git log -1 | egrep 'commit [^\s]{40}' | tr -d 'commit '`
     #REVISION_NUMBER=`git log -1 | grep 'Cr-Commit-Position: refs/heads/master@{#' | grep -v '>' | egrep -o "[0-9]+}" | tr -d '}'`
 
     if [ -z "$REVISION_NUMBER" ]
