@@ -22,6 +22,12 @@ DEPOT_TOOLS="$PROJECT_DIR/depot_tools"
 BUILD="$WEBRTC/libjingle_peerconnection_builds"
 WEBRTC_TARGET="libWebRTC_objc"
 MAC_SDK="10.11"
+WEBRTC_CLANG_DEFINE=""
+
+if [ "$WEBRTC_EMBED_BITCODE" == true ]
+then
+    WEBRTC_CLANG_DEFINE = " clang_xcode=1"
+fi
 
 function create_directory_if_not_found() {
     if [ ! -d "$1" ];
@@ -109,7 +115,7 @@ function wrbase() {
 # Add the iOS Device specific defines on top of the base
 function wrios_armv7() {
     wrbase
-    export GYP_DEFINES="$GYP_DEFINES OS=ios target_arch=arm"
+    export GYP_DEFINES="$GYP_DEFINES OS=ios target_arch=arm $WEBRTC_CLANG_DEFINE"
     export GYP_GENERATOR_FLAGS="output_dir=out_ios_armeabi_v7a"
     export GYP_CROSSCOMPILE=1
 }
@@ -117,7 +123,7 @@ function wrios_armv7() {
 # Add the iOS ARM 64 Device specific defines on top of the base
 function wrios_armv8() {
     wrbase
-    export GYP_DEFINES="$GYP_DEFINES OS=ios target_arch=arm64"
+    export GYP_DEFINES="$GYP_DEFINES OS=ios target_arch=arm64 $WEBRTC_CLANG_DEFINE"
     export GYP_GENERATOR_FLAGS="output_dir=out_ios_arm64_v8a"
     export GYP_CROSSCOMPILE=1
 }
@@ -125,21 +131,21 @@ function wrios_armv8() {
 # Add the iOS Simulator X86 specific defines on top of the base
 function wrX86() {
     wrbase
-    export GYP_DEFINES="$GYP_DEFINES OS=ios target_arch=ia32"
+    export GYP_DEFINES="$GYP_DEFINES OS=ios target_arch=ia32 $WEBRTC_CLANG_DEFINE"
     export GYP_GENERATOR_FLAGS="output_dir=out_ios_x86"
 }
 
 # Add the iOS Simulator X64 specific defines on top of the base
 function wrX86_64() {
     wrbase
-    export GYP_DEFINES="$GYP_DEFINES OS=ios target_arch=x64 target_subarch=arm64"
+    export GYP_DEFINES="$GYP_DEFINES OS=ios target_arch=x64 target_subarch=arm64 $WEBRTC_CLANG_DEFINE"
     export GYP_GENERATOR_FLAGS="output_dir=out_ios_x86_64"
 }
 
 # Add the Mac 64 bit intel defines
 function wrMac64() {
     wrbase
-    export GYP_DEFINES="$GYP_DEFINES OS=mac target_arch=x64 mac_sdk=$MAC_SDK"
+    export GYP_DEFINES="$GYP_DEFINES OS=mac target_arch=x64 mac_sdk=$MAC_SDK $WEBRTC_CLANG_DEFINE"
     export GYP_GENERATOR_FLAGS="output_dir=out_mac_x86_64"
 }
 
@@ -650,3 +656,25 @@ function dance() {
     build_webrtc
     echo "Finished Dancing!"
 }
+
+function enable_bitcode() {
+    if [ -e "$WEBRTC/src/build/common.gypi" ]
+    then
+        cd "$WEBRTC"
+        echo "Enabling embedded bitcode"
+        echo "$PROJECT_DIR/enable_bitcode.py"
+        python "$PROJECT_DIR/enable_bitcode.py"  "$WEBRTC/src/build/common.gypi"
+    fi
+}
+
+function disable_bitcode() {
+    cd "$WEBRTC/src/build"
+
+    file_changed=`git status --porcelain common.gypi | awk '/^ M/{ print $2 }'`
+
+    if [ "$file_changed" == "build/common.gypi" ] ; then
+        echo "Disabling bitcode"
+        git checkout -- common.gypi
+    fi
+}
+
