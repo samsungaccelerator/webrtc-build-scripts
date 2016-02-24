@@ -22,6 +22,7 @@ DEPOT_TOOLS="$PROJECT_DIR/depot_tools"
 BUILD="$WEBRTC/libjingle_peerconnection_builds"
 WEBRTC_TARGET="libWebRTC_objc"
 MAC_SDK="10.11"
+IOS_DEPLOY_TARGET="8.0"
 WEBRTC_CLANG_DEFINE=""
 
 if [ "$WEBRTC_EMBED_BITCODE" == true ]
@@ -115,7 +116,7 @@ function wrbase() {
 # Add the iOS Device specific defines on top of the base
 function wrios_armv7() {
     wrbase
-    export GYP_DEFINES="$GYP_DEFINES OS=ios target_arch=arm $WEBRTC_CLANG_DEFINE"
+    export GYP_DEFINES="$GYP_DEFINES OS=ios target_arch=arm ios_deployment_target=$IOS_DEPLOY_TARGET $WEBRTC_CLANG_DEFINE"
     export GYP_GENERATOR_FLAGS="output_dir=out_ios_armeabi_v7a"
     export GYP_CROSSCOMPILE=1
 }
@@ -123,7 +124,7 @@ function wrios_armv7() {
 # Add the iOS ARM 64 Device specific defines on top of the base
 function wrios_armv8() {
     wrbase
-    export GYP_DEFINES="$GYP_DEFINES OS=ios target_arch=arm64 $WEBRTC_CLANG_DEFINE"
+    export GYP_DEFINES="$GYP_DEFINES OS=ios target_arch=arm64 ios_deployment_target=$IOS_DEPLOY_TARGET $WEBRTC_CLANG_DEFINE"
     export GYP_GENERATOR_FLAGS="output_dir=out_ios_arm64_v8a"
     export GYP_CROSSCOMPILE=1
 }
@@ -131,14 +132,14 @@ function wrios_armv8() {
 # Add the iOS Simulator X86 specific defines on top of the base
 function wrX86() {
     wrbase
-    export GYP_DEFINES="$GYP_DEFINES OS=ios target_arch=ia32 $WEBRTC_CLANG_DEFINE"
+    export GYP_DEFINES="$GYP_DEFINES OS=ios target_arch=ia32 ios_deployment_target=$IOS_DEPLOY_TARGET $WEBRTC_CLANG_DEFINE"
     export GYP_GENERATOR_FLAGS="output_dir=out_ios_x86"
 }
 
 # Add the iOS Simulator X64 specific defines on top of the base
 function wrX86_64() {
     wrbase
-    export GYP_DEFINES="$GYP_DEFINES OS=ios target_arch=x64 target_subarch=arm64 $WEBRTC_CLANG_DEFINE"
+    export GYP_DEFINES="$GYP_DEFINES OS=ios target_arch=x64 ios_deployment_target=$IOS_DEPLOY_TARGET target_subarch=arm64 $WEBRTC_CLANG_DEFINE"
     export GYP_GENERATOR_FLAGS="output_dir=out_ios_x86_64"
 }
 
@@ -662,8 +663,10 @@ function enable_bitcode() {
     then
         cd "$WEBRTC"
         echo "Enabling embedded bitcode"
-        echo "$PROJECT_DIR/enable_bitcode.py"
-        python "$PROJECT_DIR/enable_bitcode.py"  "$WEBRTC/src/build/common.gypi"
+        echo "$PROJECT_DIR/enable_bitcode_debug.py"
+        python "$PROJECT_DIR/enable_bitcode_debug.py" "$WEBRTC/src/build/common.gypi"
+        echo "$PROJECT_DIR/enable_bitcode_release.py"
+        python "$PROJECT_DIR/enable_bitcode_release.py" "$WEBRTC/src/build/common.gypi"
     fi
 }
 
