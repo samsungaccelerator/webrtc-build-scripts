@@ -26,7 +26,7 @@ WEBRTC_CLANG_DEFINE=""
 
 if [ "$WEBRTC_EMBED_BITCODE" == true ]
 then
-    WEBRTC_CLANG_DEFINE = " clang_xcode=1"
+    WEBRTC_CLANG_DEFINE=" clang_xcode=1"
 fi
 
 function create_directory_if_not_found() {
