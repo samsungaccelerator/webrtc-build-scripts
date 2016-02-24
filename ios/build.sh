@@ -236,11 +236,19 @@ function sync() {
     cd "$WEBRTC"
     choose_code_signing
 
-    if [ "$WEBRTC_TARGET" == "libWebRTC_objc" ] ; then
-        twiddle_objc_target
-      else
-        untwiddle_objc_target
-    fi
+    # PERCH: untwiddling is safe.  It doesn't do anything if it wasn't
+    # previously twiddled.  The twiddling has been removed from before
+    # the sync because the synch failed with "You have unstaged changes."
+    # The twiddle happens right after the sync in update2Revision. I
+    # believe it's only needed for the actual build anyway.
+    
+    untwiddle_objc_target
+    
+    #if [ "$WEBRTC_TARGET" == "libWebRTC_objc" ] ; then
+    #    twiddle_objc_target
+    #  else
+    #    untwiddle_objc_target
+    #fi
 
     if [ -z $1 ]
     then
