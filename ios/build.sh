@@ -663,8 +663,6 @@ function enable_bitcode() {
     then
         cd "$WEBRTC"
         echo "Enabling embedded bitcode"
-        echo "$PROJECT_DIR/enable_bitcode_debug.py"
-        python "$PROJECT_DIR/enable_bitcode_debug.py" "$WEBRTC/src/build/common.gypi"
         echo "$PROJECT_DIR/enable_bitcode_release.py"
         python "$PROJECT_DIR/enable_bitcode_release.py" "$WEBRTC/src/build/common.gypi"
     fi
