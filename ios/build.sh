@@ -683,6 +683,10 @@ function disable_bitcode() {
 function patch_webrtc() {
     echo "Patching WebRTC"
     cp "$PROJECT_DIR/videocapturer.cc" "$WEBRTC/src/webrtc/media/base/"
+    cp "$PROJECT_DIR/videocommon.cc" "$WEBRTC/src/webrtc/media/base/"
+    cp "$PROJECT_DIR/videosource.cc" "$WEBRTC/src/webrtc/api/"
+    cp "$PROJECT_DIR/mediaconstraintsinterface.cc" "$WEBRTC/src/webrtc/api/"
+    cp "$PROJECT_DIR/mediaconstraintsinterface.h" "$WEBRTC/src/webrtc/api/"
 }
 
 function unpatch_webrtc() {
@@ -691,6 +695,34 @@ function unpatch_webrtc() {
     if [ "$file_changed" == "webrtc/media/base/videocapturer.cc" ] ; then
         echo "Untwiddling webrtc/media/base/videocapturer.cc"
         git checkout -- webrtc/media/base/videocapturer.cc
+    fi
+
+    cd "$WEBRTC/src"
+    file_changed=`git status --porcelain webrtc/media/base/videocommon.cc | awk '/^ M/{ print $2 }'`
+    if [ "$file_changed" == "webrtc/media/base/videocommon.cc" ] ; then
+        echo "Untwiddling webrtc/media/base/videocommon.cc"
+        git checkout -- webrtc/media/base/videocommon.cc
+    fi
+
+    cd "$WEBRTC/src"
+    file_changed=`git status --porcelain webrtc/api/videosource.cc | awk '/^ M/{ print $2 }'`
+    if [ "$file_changed" == "webrtc/api/videosource.cc" ] ; then
+        echo "Untwiddling webrtc/api/videosource.cc"
+        git checkout -- webrtc/api/videosource.cc
+    fi
+
+    cd "$WEBRTC/src"
+    file_changed=`git status --porcelain webrtc/api/mediaconstraintsinterface.cc | awk '/^ M/{ print $2 }'`
+    if [ "$file_changed" == "webrtc/api/mediaconstraintsinterface.cc" ] ; then
+        echo "Untwiddling webrtc/api/mediaconstraintsinterface.cc"
+        git checkout -- webrtc/api/mediaconstraintsinterface.cc
+    fi
+
+    cd "$WEBRTC/src"
+    file_changed=`git status --porcelain webrtc/api/mediaconstraintsinterface.h | awk '/^ M/{ print $2 }'`
+    if [ "$file_changed" == "webrtc/api/mediaconstraintsinterface.h" ] ; then
+        echo "Untwiddling webrtc/api/mediaconstraintsinterface.h"
+        git checkout -- webrtc/api/mediaconstraintsinterface.h
     fi
 }
 
