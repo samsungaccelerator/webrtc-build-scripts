@@ -250,7 +250,8 @@ function sync() {
     # believe it's only needed for the actual build anyway.
     
     untwiddle_objc_target
-    
+    unpatch_webrtc
+
     #if [ "$WEBRTC_TARGET" == "libWebRTC_objc" ] ; then
     #    twiddle_objc_target
     #  else
@@ -676,6 +677,20 @@ function disable_bitcode() {
     if [ "$file_changed" == "build/common.gypi" ] ; then
         echo "Disabling bitcode"
         git checkout -- common.gypi
+    fi
+}
+
+function patch_webrtc() {
+    echo "Patching WebRTC"
+    cp "$PROJECT_DIR/videocapturer.cc" "$WEBRTC/src/webrtc/media/base/"
+}
+
+function unpatch_webrtc() {
+    cd "$WEBRTC/src"
+    file_changed=`git status --porcelain webrtc/media/base/videocapturer.cc | awk '/^ M/{ print $2 }'`
+    if [ "$file_changed" == "webrtc/media/base/videocapturer.cc" ] ; then
+        echo "Untwiddling webrtc/media/base/videocapturer.cc"
+        git checkout -- webrtc/media/base/videocapturer.cc
     fi
 }
 
